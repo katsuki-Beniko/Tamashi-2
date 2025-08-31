@@ -10,11 +10,17 @@ public class Player : MonoBehaviour
     public float interactionRange = 2f;
     public LayerMask interactableLayer = -1;
     
+    [Header("Audio")]
+    public float minimumSpeedForFootsteps = 0.1f; // Minimum speed to play footsteps
+    
     private Rigidbody2D rb;
     private Vector2 moveInput;
     private Transform currentInteractable;
     private bool isActive = false;
     private PlayerSwitcher playerSwitcher;
+    
+    // Footstep audio variables
+    private bool wasMovingLastFrame = false;
 
     void Awake()
     {
@@ -32,6 +38,7 @@ public class Player : MonoBehaviour
         {
             HandleInput();
             CheckForInteractables();
+            HandleFootstepAudio();
         }
     }
     
@@ -58,6 +65,10 @@ public class Player : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             moveInput = Vector2.zero;
             currentInteractable = null;
+            
+            // Stop footstep audio when becoming inactive
+            StopFootstepSound();
+            wasMovingLastFrame = false;
         }
     }
     
@@ -89,6 +100,41 @@ public class Player : MonoBehaviour
     private void HandleMovement()
     {
         rb.linearVelocity = moveInput * moveSpeed;
+    }
+    
+    private void HandleFootstepAudio()
+    {
+        // Check if player is moving
+        bool isMoving = rb.linearVelocity.magnitude > minimumSpeedForFootsteps;
+        
+        if (isMoving && !wasMovingLastFrame)
+        {
+            // Just started moving - start footstep audio
+            StartFootstepSound();
+        }
+        else if (!isMoving && wasMovingLastFrame)
+        {
+            // Just stopped moving - stop footstep audio
+            StopFootstepSound();
+        }
+        
+        wasMovingLastFrame = isMoving;
+    }
+    
+    private void StartFootstepSound()
+    {
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.StartFootsteps();
+        }
+    }
+    
+    private void StopFootstepSound()
+    {
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.StopFootsteps();
+        }
     }
     
     private void CheckForInteractables()
