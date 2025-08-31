@@ -95,41 +95,6 @@ public class Player : MonoBehaviour
         rb.linearVelocity = moveInput * moveSpeed;
     }
     
-    void OnCollisionStay2D(Collision2D collision)
-    {
-        // Check if we're colliding with a box
-        SokobanBox box = collision.gameObject.GetComponent<SokobanBox>();
-        if (box != null && moveInput.magnitude > 0.1f)
-        {
-            // Calculate push direction based on collision
-            Vector2 pushDirection = GetPushDirection(collision);
-            
-            // Try to push the box
-            box.TryPush(pushDirection, this);
-        }
-    }
-    
-    private Vector2 GetPushDirection(Collision2D collision)
-    {
-        // Get direction from player to box
-        Vector2 dirToBox = (collision.transform.position - transform.position).normalized;
-        
-        // Snap to cardinal directions (Sokoban-style)
-        Vector2 cardinalDirection;
-        if (Mathf.Abs(dirToBox.x) > Mathf.Abs(dirToBox.y))
-        {
-            // Horizontal push
-            cardinalDirection = new Vector2(dirToBox.x > 0 ? 1 : -1, 0);
-        }
-        else
-        {
-            // Vertical push
-            cardinalDirection = new Vector2(0, dirToBox.y > 0 ? 1 : -1);
-        }
-        
-        return cardinalDirection;
-    }
-    
     private void CheckForInteractables()
     {
         Collider2D nearestInteractable = Physics2D.OverlapCircle(transform.position, interactionRange, interactableLayer);
