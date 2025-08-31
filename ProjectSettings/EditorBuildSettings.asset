@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/enemy testing.unity
     guid: 6f18cdc218bed7147a0fa81e8437b8f8
   - enabled: 1
+    path: Assets/Scenes/Main gameplay/prologue.unity
+    guid: 9bb4cdbdf55f39843bab3bb206bfab08
+  - enabled: 1
     path: Assets/Scenes/Main gameplay/level-1.unity
     guid: 5734a32232e72da41ab159f15cc58a4f
   - enabled: 1
