@@ -6543,7 +6543,7 @@ GameObject:
   - component: {fileID: 638717720}
   - component: {fileID: 638717719}
   m_Layer: 0
-  m_Name: 16x16 Walk Cycle-Sheet_0
+  m_Name: puppet
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9738,6 +9738,18 @@ PrefabInstance:
       propertyPath: 'players.Array.data[1]'
       value: 
       objectReference: {fileID: 638717719}
+    - target: {fileID: 1296324358058552845, guid: fa03db6df1fc4034f8b75c17b66b8bfd, type: 3}
+      propertyPath: threatenedPlayerColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1296324358058552845, guid: fa03db6df1fc4034f8b75c17b66b8bfd, type: 3}
+      propertyPath: threatenedPlayerColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1296324358058552845, guid: fa03db6df1fc4034f8b75c17b66b8bfd, type: 3}
+      propertyPath: threatenedPlayerColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1296324358058552845, guid: fa03db6df1fc4034f8b75c17b66b8bfd, type: 3}
       propertyPath: sceneCameraConfigs.Array.size
       value: 1
