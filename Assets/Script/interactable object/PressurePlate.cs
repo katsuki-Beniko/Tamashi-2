@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class PressurePlate : MonoBehaviour
 {
@@ -14,9 +15,23 @@ public class PressurePlate : MonoBehaviour
     public Color plateDownColor = Color.green;
     public float pressDepth = 0.2f; // How far down the plate moves when pressed
     
+    [Header("Individual Object Destruction")]
+    public GameObject[] objectsToDestroy; // Objects this plate will destroy when activated
+    public bool destroyOnActivation = true; // Destroy when pressed
+    public bool destroyOnDeactivation = false; // Destroy when released
+    public float destructionDelay = 0.0f; // Delay before destruction
+    
+    [Header("Destruction Effects")]
+    public bool fadeOutBeforeDestroy = true;
+    public float fadeOutDuration = 0.5f;
+    public bool shakeBeforeDestroy = false;
+    public float shakeIntensity = 0.1f;
+    public float shakeDuration = 0.3f;
+    
     [Header("Audio")]
     public AudioClip pressSound;
     public AudioClip releaseSound;
+    public AudioClip destructionSound;
     
     [Header("Detection")]
     public LayerMask triggerLayers = -1; // What can trigger this plate (players, objects, etc.)
@@ -27,6 +42,7 @@ public class PressurePlate : MonoBehaviour
     private Vector3 pressedPosition;
     private PressurePlateController controller;
     private int currentTriggersOnPlate = 0;
+    private bool hasDestroyedObjects = false;
     
     void Start()
     {
@@ -92,6 +108,12 @@ public class PressurePlate : MonoBehaviour
             controller.OnPlateActivated(this);
         }
         
+        // NEW: Destroy objects when activated
+        if (destroyOnActivation && objectsToDestroy.Length > 0 && !hasDestroyedObjects)
+        {
+            DestroyTargetObjects();
+        }
+        
         Debug.Log($"Pressure plate {plateID} activated!");
     }
     
@@ -111,7 +133,144 @@ public class PressurePlate : MonoBehaviour
             controller.OnPlateDeactivated(this);
         }
         
+        // NEW: Destroy objects when deactivated (optional)
+        if (destroyOnDeactivation && objectsToDestroy.Length > 0 && !hasDestroyedObjects)
+        {
+            DestroyTargetObjects();
+        }
+        
         Debug.Log($"Pressure plate {plateID} deactivated!");
+    }
+    
+    // NEW: Individual object destruction system
+    private void DestroyTargetObjects()
+    {
+        if (hasDestroyedObjects) return; // Prevent multiple destructions
+        
+        hasDestroyedObjects = true;
+        
+        Debug.Log($"Pressure plate {plateID} destroying {objectsToDestroy.Length} target objects...");
+        
+        if (destructionDelay > 0)
+        {
+            Invoke(nameof(ExecuteDestruction), destructionDelay);
+        }
+        else
+        {
+            ExecuteDestruction();
+        }
+    }
+    
+    private void ExecuteDestruction()
+    {
+        if (fadeOutBeforeDestroy || shakeBeforeDestroy)
+        {
+            StartCoroutine(DestroyWithEffects());
+        }
+        else
+        {
+            DestroyObjectsImmediately();
+        }
+    }
+    
+    private IEnumerator DestroyWithEffects()
+    {
+        System.Collections.Generic.List<SpriteRenderer> renderers = new System.Collections.Generic.List<SpriteRenderer>();
+        System.Collections.Generic.List<Color> originalColors = new System.Collections.Generic.List<Color>();
+        
+        // Collect renderers and start shaking
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            if (obj != null)
+            {
+                SpriteRenderer renderer = obj.GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                {
+                    renderers.Add(renderer);
+                    originalColors.Add(renderer.color);
+                }
+                
+                // Start shaking
+                if (shakeBeforeDestroy)
+                {
+                    StartCoroutine(ShakeObject(obj, shakeIntensity, shakeDuration));
+                }
+            }
+        }
+        
+        // Fade out
+        if (fadeOutBeforeDestroy && renderers.Count > 0)
+        {
+            float elapsedTime = 0f;
+            while (elapsedTime < fadeOutDuration)
+            {
+                float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeOutDuration);
+                
+                for (int i = 0; i < renderers.Count; i++)
+                {
+                    if (renderers[i] != null)
+                    {
+                        Color color = originalColors[i];
+                        color.a = alpha;
+                        renderers[i].color = color;
+                    }
+                }
+                
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+        
+        // Wait for shake to finish
+        if (shakeBeforeDestroy)
+        {
+            yield return new WaitForSeconds(shakeDuration);
+        }
+        
+        DestroyObjectsImmediately();
+    }
+    
+    private IEnumerator ShakeObject(GameObject obj, float intensity, float duration)
+    {
+        if (obj == null) yield break;
+        
+        Vector3 originalPos = obj.transform.position;
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < duration)
+        {
+            Vector3 randomOffset = new Vector3(
+                Random.Range(-intensity, intensity),
+                Random.Range(-intensity, intensity),
+                0f
+            );
+            
+            obj.transform.position = originalPos + randomOffset;
+            
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        
+        if (obj != null)
+        {
+            obj.transform.position = originalPos;
+        }
+    }
+    
+    private void DestroyObjectsImmediately()
+    {
+        PlaySound(destructionSound);
+        
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            if (obj != null)
+            {
+                Debug.Log($"🗑️ Pressure plate {plateID} destroyed: {obj.name}");
+                Destroy(obj);
+            }
+        }
+        
+        Debug.Log($"Pressure plate {plateID} destruction complete!");
     }
     
     public void ForceActivate()
@@ -125,6 +284,17 @@ public class PressurePlate : MonoBehaviour
         {
             DeactivatePlate();
         }
+    }
+    
+    // Public methods for external control
+    public void ManualDestroyObjects()
+    {
+        DestroyTargetObjects();
+    }
+    
+    public void ResetDestructionState()
+    {
+        hasDestroyedObjects = false;
     }
     
     private void UpdatePlateVisual()
@@ -162,10 +332,19 @@ public class PressurePlate : MonoBehaviour
         Gizmos.color = isPressed ? Color.green : Color.red;
         Gizmos.DrawWireCube(transform.position, Vector3.one * 0.8f);
         
-        // Show plate ID
-        Gizmos.color = Color.white;
+        // Draw lines to destruction targets
+        Gizmos.color = Color.red;
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            if (obj != null)
+            {
+                Gizmos.DrawLine(transform.position, obj.transform.position);
+                Gizmos.DrawWireCube(obj.transform.position, Vector3.one * 0.3f);
+            }
+        }
+        
         #if UNITY_EDITOR
-        UnityEditor.Handles.Label(transform.position + Vector3.up * 0.5f, $"Plate {plateID}");
+        UnityEditor.Handles.Label(transform.position + Vector3.up * 0.5f, $"Plate {plateID}\nTargets: {objectsToDestroy.Length}");
         #endif
     }
 }

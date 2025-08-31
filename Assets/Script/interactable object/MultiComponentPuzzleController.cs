@@ -17,7 +17,27 @@ public class MultiComponentPuzzleController : MonoBehaviour
     [Header("Connected Objects")]
     public GameObject[] objectsToActivate;
     public GameObject[] objectsToDeactivate;
-    public GameObject[] doorsToOpen; // Using GameObject instead of SceneTransitionDoor
+    public GameObject[] doorsToOpen;
+    
+    [Header("Object Destruction")]
+    public GameObject[] objectsToDestroy; // NEW: Objects to destroy when puzzle is solved
+    public bool destroyWithEffect = true;
+    public float destructionDelay = 0.5f; // Delay before destruction
+    public AudioClip destructionSound;
+    
+    [Header("Destruction Effects")]
+    public bool fadeOutBeforeDestroy = true;
+    public float fadeOutDuration = 1f;
+    public bool shakeBeforeDestroy = false;
+    public float shakeIntensity = 0.1f;
+    public float shakeDuration = 0.5f;
+    
+    [Header("Camera Shake on Completion")]
+    public bool enableCameraShake = true;
+    public CameraController cameraController;
+    public float shakeAmplitude = 0.3f;
+    public int shakeSoftLevel = 2;
+    public bool shakeDecrease = true;
     
     [Header("Audio")]
     public AudioClip puzzleCompleteSound;
@@ -25,7 +45,7 @@ public class MultiComponentPuzzleController : MonoBehaviour
     
     [Header("Visual Feedback")]
     public bool showProgress = true;
-    public float checkInterval = 0.1f; // How often to check component states
+    public float checkInterval = 0.1f;
     
     private HashSet<PressurePlate> activatedPlates = new HashSet<PressurePlate>();
     private HashSet<InteractiveButton> activatedButtons = new HashSet<InteractiveButton>();
@@ -43,6 +63,21 @@ public class MultiComponentPuzzleController : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         
+        // Auto-find camera controller if not assigned
+        if (cameraController == null)
+        {
+            cameraController = FindFirstObjectByType<CameraController>();
+            if (cameraController != null)
+            {
+                Debug.Log($"Auto-found CameraController on: {cameraController.name}");
+            }
+            else
+            {
+                Debug.LogWarning("No CameraController found! Camera shake will be disabled.");
+                enableCameraShake = false;
+            }
+        }
+        
         // Auto-find components if arrays are empty
         if (requiredPressurePlates.Length == 0)
             requiredPressurePlates = GetComponentsInChildren<PressurePlate>();
@@ -53,13 +88,13 @@ public class MultiComponentPuzzleController : MonoBehaviour
         // Initialize state tracking arrays
         InitializeStateTracking();
         
-        // Set up InteractiveButton events (these have events)
+        // Set up InteractiveButton events
         RegisterButtonEvents();
         
         // Start checking component states
         InvokeRepeating(nameof(CheckComponentStates), 0f, checkInterval);
         
-        Debug.Log($"Multi-Component Puzzle initialized: {requiredPressurePlates.Length} plates, {requiredButtons.Length} buttons, {requiredLevers.Length} levers");
+        Debug.Log($"Multi-Component Puzzle initialized: {requiredPressurePlates.Length} plates, {requiredButtons.Length} buttons, {objectsToDestroy.Length} objects to destroy");
     }
     
     private void InitializeStateTracking()
@@ -81,7 +116,6 @@ public class MultiComponentPuzzleController : MonoBehaviour
                 previousButtonStates[i] = requiredButtons[i].IsActivated();
         }
         
-        // Initialize lever states (you can customize this based on your lever implementation)
         for (int i = 0; i < requiredLevers.Length; i++)
         {
             previousLeverStates[i] = false;
@@ -90,7 +124,6 @@ public class MultiComponentPuzzleController : MonoBehaviour
     
     private void RegisterButtonEvents()
     {
-        // Register button events (InteractiveButton has events)
         foreach (InteractiveButton button in requiredButtons)
         {
             if (button != null)
@@ -117,7 +150,6 @@ public class MultiComponentPuzzleController : MonoBehaviour
                 bool currentState = requiredPressurePlates[i].isPressed;
                 bool previousState = previousPlateStates[i];
                 
-                // Check for state changes
                 if (currentState != previousState)
                 {
                     previousPlateStates[i] = currentState;
@@ -137,13 +169,10 @@ public class MultiComponentPuzzleController : MonoBehaviour
     
     private void CheckLeverStates()
     {
-        // Implement lever state checking based on your lever system
-        // This is a placeholder - customize based on your lever implementation
         for (int i = 0; i < requiredLevers.Length; i++)
         {
             if (requiredLevers[i] != null)
             {
-                // Example: Check if lever GameObject is active, or has a specific component state
                 bool currentState = requiredLevers[i].activeInHierarchy;
                 bool previousState = previousLeverStates[i];
                 
@@ -164,7 +193,7 @@ public class MultiComponentPuzzleController : MonoBehaviour
         }
     }
     
-    // Pressure Plate Events (called by state checking)
+    // Component Event Handlers
     private void OnPlateActivated(PressurePlate plate)
     {
         activatedPlates.Add(plate);
@@ -178,7 +207,6 @@ public class MultiComponentPuzzleController : MonoBehaviour
         Debug.Log($"Pressure plate {plate.name} deactivated. Progress: {activatedPlates.Count}/{requiredPressurePlates.Length}");
     }
     
-    // Button Events (called by InteractiveButton events)
     private void OnButtonActivated(InteractiveButton button)
     {
         activatedButtons.Add(button);
@@ -192,7 +220,6 @@ public class MultiComponentPuzzleController : MonoBehaviour
         Debug.Log($"Button {button.name} deactivated. Progress: {activatedButtons.Count}/{requiredButtons.Length}");
     }
     
-    // Lever Events (called by state checking)
     private void OnLeverActivated(GameObject lever)
     {
         activatedLevers.Add(lever);
@@ -251,10 +278,17 @@ public class MultiComponentPuzzleController : MonoBehaviour
         puzzleCompleted = true;
         PlaySound(puzzleCompleteSound);
         
-        // Activate connected objects
-        ActivateConnectedObjects();
-        
         Debug.Log("🎉 Multi-Component Puzzle COMPLETED! All requirements satisfied.");
+        
+        // Execute all completion actions
+        ActivateConnectedObjects();
+        TriggerCameraShake();
+        
+        // NEW: Destroy objects when puzzle is completed
+        if (objectsToDestroy.Length > 0)
+        {
+            DestroyPuzzleObjects();
+        }
     }
     
     private void ActivateConnectedObjects()
@@ -279,20 +313,172 @@ public class MultiComponentPuzzleController : MonoBehaviour
             }
         }
         
-        // Handle doors (assuming they have a method to open or are just GameObjects)
+        // Handle doors
         foreach (GameObject door in doorsToOpen)
         {
             if (door != null)
             {
-                // Option 1: If doors are just GameObjects, activate them
                 door.SetActive(true);
-                
-                // Option 2: If doors have a specific script, uncomment and customize:
-                // SceneTransitionDoor doorScript = door.GetComponent<SceneTransitionDoor>();
-                // if (doorScript != null) doorScript.SetDoorOpen(true);
-                
                 Debug.Log($"Opened door: {door.name}");
             }
+        }
+    }
+    
+    // NEW: Object Destruction System
+    private void DestroyPuzzleObjects()
+    {
+        if (destroyWithEffect)
+        {
+            // Start destruction with effects
+            StartCoroutine(DestroyObjectsWithEffects());
+        }
+        else
+        {
+            // Immediate destruction
+            if (destructionDelay > 0)
+            {
+                Invoke(nameof(DestroyObjectsImmediately), destructionDelay);
+            }
+            else
+            {
+                DestroyObjectsImmediately();
+            }
+        }
+    }
+    
+    private System.Collections.IEnumerator DestroyObjectsWithEffects()
+    {
+        Debug.Log($"Starting destruction sequence for {objectsToDestroy.Length} objects...");
+        
+        // Wait for initial delay
+        if (destructionDelay > 0)
+        {
+            yield return new WaitForSeconds(destructionDelay);
+        }
+        
+        List<SpriteRenderer> renderers = new List<SpriteRenderer>();
+        List<Color> originalColors = new List<Color>();
+        
+        // Collect renderers and start shaking if enabled
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            if (obj != null)
+            {
+                SpriteRenderer renderer = obj.GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                {
+                    renderers.Add(renderer);
+                    originalColors.Add(renderer.color);
+                }
+                
+                // Start shaking effect
+                if (shakeBeforeDestroy)
+                {
+                    StartCoroutine(ShakeObject(obj, shakeIntensity, shakeDuration));
+                }
+            }
+        }
+        
+        // Fade out if enabled
+        if (fadeOutBeforeDestroy && renderers.Count > 0)
+        {
+            float elapsedTime = 0f;
+            while (elapsedTime < fadeOutDuration)
+            {
+                float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeOutDuration);
+                
+                for (int i = 0; i < renderers.Count; i++)
+                {
+                    if (renderers[i] != null)
+                    {
+                        Color color = originalColors[i];
+                        color.a = alpha;
+                        renderers[i].color = color;
+                    }
+                }
+                
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+        
+        // Wait for shake to finish
+        if (shakeBeforeDestroy)
+        {
+            yield return new WaitForSeconds(shakeDuration);
+        }
+        
+        // Finally destroy the objects
+        DestroyObjectsImmediately();
+    }
+    
+    private System.Collections.IEnumerator ShakeObject(GameObject obj, float intensity, float duration)
+    {
+        if (obj == null) yield break;
+        
+        Vector3 originalPos = obj.transform.position;
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < duration)
+        {
+            Vector3 randomOffset = new Vector3(
+                Random.Range(-intensity, intensity),
+                Random.Range(-intensity, intensity),
+                0f
+            );
+            
+            obj.transform.position = originalPos + randomOffset;
+            
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        
+        // Return to original position
+        if (obj != null)
+        {
+            obj.transform.position = originalPos;
+        }
+    }
+    
+    private void DestroyObjectsImmediately()
+    {
+        PlaySound(destructionSound);
+        
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            if (obj != null)
+            {
+                Debug.Log($"🗑️ Destroying object: {obj.name}");
+                Destroy(obj);
+            }
+        }
+        
+        Debug.Log($"Destroyed {objectsToDestroy.Length} objects!");
+    }
+    
+    private void TriggerCameraShake()
+    {
+        if (enableCameraShake && cameraController != null)
+        {
+            cameraController.Shake(shakeDuration, shakeAmplitude, shakeSoftLevel, shakeDecrease);
+            Debug.Log($"Camera shake triggered! Duration: {shakeDuration}s, Amplitude: {shakeAmplitude}");
+        }
+    }
+    
+    // Public Methods
+    public void ManualDestroyObjects()
+    {
+        DestroyPuzzleObjects();
+    }
+    
+    public void AddObjectToDestroy(GameObject obj)
+    {
+        if (obj != null)
+        {
+            List<GameObject> objList = new List<GameObject>(objectsToDestroy);
+            objList.Add(obj);
+            objectsToDestroy = objList.ToArray();
+            Debug.Log($"Added {obj.name} to destruction list");
         }
     }
     
@@ -303,7 +489,6 @@ public class MultiComponentPuzzleController : MonoBehaviour
         activatedButtons.Clear();
         activatedLevers.Clear();
         
-        // Reset state tracking
         InitializeStateTracking();
         
         Debug.Log("Puzzle reset!");
@@ -317,7 +502,7 @@ public class MultiComponentPuzzleController : MonoBehaviour
         }
     }
     
-    // Public methods for external control
+    // Public getters
     public bool IsPuzzleCompleted() => puzzleCompleted;
     
     public float GetCompletionPercentage()
@@ -348,10 +533,8 @@ public class MultiComponentPuzzleController : MonoBehaviour
     
     void OnDestroy()
     {
-        // Stop the repeating invoke
         CancelInvoke(nameof(CheckComponentStates));
         
-        // Unregister button events
         foreach (InteractiveButton button in requiredButtons)
         {
             if (button != null)
@@ -367,11 +550,23 @@ public class MultiComponentPuzzleController : MonoBehaviour
         Gizmos.color = puzzleCompleted ? Color.green : Color.red;
         Gizmos.DrawWireCube(transform.position, Vector3.one * 3f);
         
+        // Draw destruction targets
+        Gizmos.color = Color.red;
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            if (obj != null)
+            {
+                Gizmos.DrawLine(transform.position, obj.transform.position);
+                Gizmos.DrawWireCube(obj.transform.position, Vector3.one * 0.5f);
+            }
+        }
+        
         #if UNITY_EDITOR
         string info = "Multi-Component Puzzle\n";
         if (requireAllPressurePlates) info += $"Plates: {(activatedPlates?.Count ?? 0)}/{requiredPressurePlates?.Length ?? 0}\n";
         if (requireAllButtons) info += $"Buttons: {(activatedButtons?.Count ?? 0)}/{requiredButtons?.Length ?? 0}\n";
-        if (requireAllLevers) info += $"Levers: {(activatedLevers?.Count ?? 0)}/{requiredLevers?.Length ?? 0}";
+        if (requireAllLevers) info += $"Levers: {(activatedLevers?.Count ?? 0)}/{requiredLevers?.Length ?? 0}\n";
+        info += $"Objects to Destroy: {objectsToDestroy?.Length ?? 0}";
         
         UnityEditor.Handles.Label(transform.position + Vector3.up * 2f, info);
         #endif

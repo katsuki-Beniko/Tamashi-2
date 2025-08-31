@@ -302,8 +302,18 @@ MonoBehaviour:
   activatedVisual: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   activatedColor: {r: 1, g: 1, b: 1, a: 1}
+  objectsToDestroy: []
+  destroyOnActivation: 1
+  destroyOnDeactivation: 0
+  destructionDelay: 0
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 0.5
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 0.3
   activationSound: {fileID: 0}
   deactivationSound: {fileID: 0}
+  destructionSound: {fileID: 0}
   OnActivated:
     m_PersistentCalls:
       m_Calls: []
@@ -625,8 +635,18 @@ MonoBehaviour:
   plateUpColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   plateDownColor: {r: 0, g: 1, b: 0, a: 1}
   pressDepth: 0.2
+  objectsToDestroy: []
+  destroyOnActivation: 1
+  destroyOnDeactivation: 0
+  destructionDelay: 0
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 0.5
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 0.3
   pressSound: {fileID: 0}
   releaseSound: {fileID: 0}
+  destructionSound: {fileID: 0}
   triggerLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -816,8 +836,18 @@ MonoBehaviour:
   plateUpColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   plateDownColor: {r: 0, g: 1, b: 0, a: 1}
   pressDepth: 0.2
+  objectsToDestroy: []
+  destroyOnActivation: 1
+  destroyOnDeactivation: 0
+  destructionDelay: 0
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 0.5
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 0.3
   pressSound: {fileID: 0}
   releaseSound: {fileID: 0}
+  destructionSound: {fileID: 0}
   triggerLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1233,8 +1263,18 @@ MonoBehaviour:
   plateUpColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   plateDownColor: {r: 0, g: 1, b: 0, a: 1}
   pressDepth: 0.2
+  objectsToDestroy: []
+  destroyOnActivation: 1
+  destroyOnDeactivation: 0
+  destructionDelay: 0
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 0.5
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 0.3
   pressSound: {fileID: 0}
   releaseSound: {fileID: 0}
+  destructionSound: {fileID: 0}
   triggerLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1424,8 +1464,18 @@ MonoBehaviour:
   plateUpColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   plateDownColor: {r: 0, g: 1, b: 0, a: 1}
   pressDepth: 0.2
+  objectsToDestroy: []
+  destroyOnActivation: 1
+  destroyOnDeactivation: 0
+  destructionDelay: 0
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 0.5
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 0.3
   pressSound: {fileID: 0}
   releaseSound: {fileID: 0}
+  destructionSound: {fileID: 0}
   triggerLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1612,8 +1662,18 @@ MonoBehaviour:
   activatedVisual: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   activatedColor: {r: 1, g: 1, b: 1, a: 1}
+  objectsToDestroy: []
+  destroyOnActivation: 1
+  destroyOnDeactivation: 0
+  destructionDelay: 0
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 0.5
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 0.3
   activationSound: {fileID: 0}
   deactivationSound: {fileID: 0}
+  destructionSound: {fileID: 0}
   OnActivated:
     m_PersistentCalls:
       m_Calls: []
@@ -22400,6 +22460,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3549803104007266998, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3549803104007266998, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
       propertyPath: m_SortingOrder
       value: 4
       objectReference: {fileID: 0}
@@ -22433,7 +22497,7 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: e79ea8d458caf6f48b258e9b2aa3a2ff, type: 3}
     - target: {fileID: 8477420117442223093, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
       propertyPath: targetSceneName
-      value: level-4
+      value: Final story (jungle)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -25141,8 +25205,18 @@ MonoBehaviour:
   activatedVisual: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   activatedColor: {r: 1, g: 1, b: 1, a: 1}
+  objectsToDestroy: []
+  destroyOnActivation: 1
+  destroyOnDeactivation: 0
+  destructionDelay: 0
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 0.5
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 0.3
   activationSound: {fileID: 0}
   deactivationSound: {fileID: 0}
+  destructionSound: {fileID: 0}
   OnActivated:
     m_PersistentCalls:
       m_Calls: []
@@ -60796,8 +60870,18 @@ MonoBehaviour:
   activatedVisual: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   activatedColor: {r: 1, g: 1, b: 1, a: 1}
+  objectsToDestroy: []
+  destroyOnActivation: 1
+  destroyOnDeactivation: 0
+  destructionDelay: 0
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 0.5
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 0.3
   activationSound: {fileID: 0}
   deactivationSound: {fileID: 0}
+  destructionSound: {fileID: 0}
   OnActivated:
     m_PersistentCalls:
       m_Calls: []
@@ -60964,6 +61048,20 @@ MonoBehaviour:
   objectsToDeactivate: []
   doorsToOpen:
   - {fileID: 688988273}
+  objectsToDestroy: []
+  destroyWithEffect: 1
+  destructionDelay: 0.5
+  destructionSound: {fileID: 0}
+  fadeOutBeforeDestroy: 1
+  fadeOutDuration: 1
+  shakeBeforeDestroy: 0
+  shakeIntensity: 0.1
+  shakeDuration: 20
+  enableCameraShake: 1
+  cameraController: {fileID: 2065383670}
+  shakeAmplitude: 100
+  shakeSoftLevel: 2
+  shakeDecrease: 1
   puzzleCompleteSound: {fileID: 0}
   componentActivatedSound: {fileID: 0}
   showProgress: 1
@@ -61174,6 +61272,7 @@ GameObject:
   - component: {fileID: 2065383665}
   - component: {fileID: 2065383668}
   - component: {fileID: 2065383669}
+  - component: {fileID: 2065383670}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -61331,6 +61430,18 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!114 &2065383670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2065383664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9c68494e19a4e144b5434c6697d6fff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraController
 --- !u!1 &2106036003
 GameObject:
   m_ObjectHideFlags: 0
