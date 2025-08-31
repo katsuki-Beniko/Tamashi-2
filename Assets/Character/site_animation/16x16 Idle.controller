@@ -86,12 +86,12 @@ AnimatorStateTransition:
   - m_ConditionMode: 3
     m_ConditionEvent: Horizontal
     m_EventTreshold: -0.01
-  - m_ConditionMode: 4
-    m_ConditionEvent: Horizontal
-    m_EventTreshold: 0.01
   - m_ConditionMode: 3
     m_ConditionEvent: Vertical
     m_EventTreshold: -0.01
+  - m_ConditionMode: 4
+    m_ConditionEvent: Horizontal
+    m_EventTreshold: 0.01
   - m_ConditionMode: 4
     m_ConditionEvent: Vertical
     m_EventTreshold: 0.01
@@ -337,10 +337,10 @@ AnimatorState:
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
-  - {fileID: -4279309429284985372}
-  - {fileID: -3117698122184542271}
-  - {fileID: 2822510195673995634}
   - {fileID: -7052225382487365283}
+  - {fileID: 2822510195673995634}
+  - {fileID: -3117698122184542271}
+  - {fileID: -4279309429284985372}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
