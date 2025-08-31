@@ -28,7 +28,7 @@ public class PlayerSwitcher : MonoBehaviour
     public class SceneCameraConfig
     {
         [Header("Scene Info")]
-        [SceneDropdown] // Add the dropdown attribute here
+        [SceneDropdown]
         public string sceneName;
         public bool useFixedPositions = false;
         
@@ -47,6 +47,10 @@ public class PlayerSwitcher : MonoBehaviour
     private int currentPlayerIndex = 0;
     private Player currentActivePlayer;
     private List<EnemyChaseAI> allEnemies = new List<EnemyChaseAI>();
+    
+    // Component management - ENHANCED to include Playersokoban
+    private Dictionary<Player, PlayerController> playerControllers = new Dictionary<Player, PlayerController>();
+    private Dictionary<Player, Playersokoban> playersokobanComponents = new Dictionary<Player, Playersokoban>();
     
     // Cooldown system
     private float switchCooldownTimer = 0f;
@@ -71,6 +75,12 @@ public class PlayerSwitcher : MonoBehaviour
             return;
         }
         
+        // Cache all player components
+        CachePlayerComponents();
+        
+        // Fix movement constraints for all players
+        FixPlayerConstraints();
+        
         // Find all enemies in the scene
         FindAllEnemies();
         
@@ -79,6 +89,48 @@ public class PlayerSwitcher : MonoBehaviour
         
         // Initialize the first player as active
         SwitchToPlayer(0);
+    }
+    
+    private void CachePlayerComponents()
+    {
+        foreach (Player player in players)
+        {
+            if (player != null)
+            {
+                // Cache PlayerController components
+                PlayerController controller = player.GetComponent<PlayerController>();
+                if (controller != null)
+                {
+                    playerControllers[player] = controller;
+                    Debug.Log($"Found PlayerController on {player.name}");
+                }
+                
+                // Cache Playersokoban components - ADDED
+                Playersokoban sokobanController = player.GetComponent<Playersokoban>();
+                if (sokobanController != null)
+                {
+                    playersokobanComponents[player] = sokobanController;
+                    Debug.Log($"Found Playersokoban on {player.name}");
+                }
+            }
+        }
+    }
+    
+    private void FixPlayerConstraints()
+    {
+        foreach (Player player in players)
+        {
+            if (player != null)
+            {
+                Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    // Remove FreezeAll constraint - keep only FreezeRotation
+                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+                    Debug.Log($"Fixed movement constraints for {player.name}");
+                }
+            }
+        }
     }
     
     void Update()
@@ -249,16 +301,15 @@ public class PlayerSwitcher : MonoBehaviour
     {
         if (playerIndex < 0 || playerIndex >= players.Length) return;
         
-        // Deactivate current player
-        if (currentActivePlayer != null)
-        {
-            currentActivePlayer.SetActive(false);
-        }
+        // Deactivate all players and their controllers
+        DeactivateAllPlayers();
         
         // Activate new player
         currentPlayerIndex = playerIndex;
         currentActivePlayer = players[currentPlayerIndex];
-        currentActivePlayer.SetActive(true);
+        
+        // Activate the selected player and its components
+        ActivatePlayer(currentActivePlayer);
         
         // Update camera
         UpdateCameraForPlayer(playerIndex);
@@ -267,6 +318,61 @@ public class PlayerSwitcher : MonoBehaviour
         UpdateAllPlayerVisuals();
         
         Debug.Log($"Switched to {currentActivePlayer.name}");
+    }
+    
+    private void DeactivateAllPlayers()
+    {
+        foreach (Player player in players)
+        {
+            if (player != null)
+            {
+                // Deactivate Player script
+                player.SetActive(false);
+                
+                // Deactivate PlayerController if it exists
+                if (playerControllers.ContainsKey(player))
+                {
+                    playerControllers[player].enabled = false;
+                }
+                
+                // ENHANCED: Deactivate Playersokoban if it exists
+                if (playersokobanComponents.ContainsKey(player))
+                {
+                    playersokobanComponents[player].SetActive(false);
+                    Debug.Log($"Deactivated Playersokoban for {player.name}");
+                }
+                
+                // Stop movement immediately
+                Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    rb.linearVelocity = Vector2.zero;
+                }
+            }
+        }
+    }
+    
+    private void ActivatePlayer(Player player)
+    {
+        if (player != null)
+        {
+            // Activate Player script
+            player.SetActive(true);
+            
+            // Activate PlayerController if it exists (only for the active player)
+            if (playerControllers.ContainsKey(player))
+            {
+                playerControllers[player].enabled = true;
+                Debug.Log($"Enabled PlayerController for {player.name}");
+            }
+            
+            // ENHANCED: Activate Playersokoban if it exists (only for the active player)
+            if (playersokobanComponents.ContainsKey(player))
+            {
+                playersokobanComponents[player].SetActive(true);
+                Debug.Log($"Enabled Playersokoban for {player.name}");
+            }
+        }
     }
     
     private void UpdateCameraForPlayer(int playerIndex)
@@ -375,13 +481,30 @@ public class PlayerSwitcher : MonoBehaviour
         return isOnCooldown ? switchCooldownTimer : 0f;
     }
     
-    // Debug information
+    // Debug information - ENHANCED to show Playersokoban status
     void OnGUI()
     {
         if (Application.isPlaying)
         {
-            GUILayout.BeginArea(new Rect(10, 10, 350, 200));
+            GUILayout.BeginArea(new Rect(10, 10, 450, 300));
             GUILayout.Label($"Active Player: {(currentActivePlayer ? currentActivePlayer.name : "None")}");
+            
+            // Show component status for each player
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i] != null)
+                {
+                    bool playerActive = players[i].isActiveAndEnabled;
+                    bool hasController = playerControllers.ContainsKey(players[i]);
+                    bool controllerActive = hasController && playerControllers[players[i]].enabled;
+                    bool hasSokoban = playersokobanComponents.ContainsKey(players[i]);
+                    bool sokobanActive = hasSokoban && playersokobanComponents[players[i]].isActive;
+                    
+                    string status = $"{players[i].name}: Player={playerActive}, Controller={controllerActive}, Sokoban={sokobanActive}";
+                    GUILayout.Label(status);
+                }
+            }
+            
             GUILayout.Label($"Threatened: {(isAnyPlayerThreatened ? "YES" : "No")}");
             GUILayout.Label($"Can Switch: {(CanSwitchPlayers() ? "YES" : "No")}");
             
