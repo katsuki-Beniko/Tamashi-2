@@ -66,5 +66,5 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "Tamashi2.sln"
+    "dotnet.defaultSolution": "Tamashi-2.sln"
 }
