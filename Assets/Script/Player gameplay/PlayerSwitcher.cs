@@ -173,7 +173,7 @@ public class PlayerSwitcher : MonoBehaviour
     
     private void HandleSwitchInput()
     {
-        if (Keyboard.current.cKey.wasPressedThisFrame)
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             TryToSwitchPlayer();
         }
