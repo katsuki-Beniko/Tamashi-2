@@ -10,6 +10,10 @@ public class Player : MonoBehaviour
     public float interactionRange = 2f;
     public LayerMask interactableLayer = -1;
     
+    [Header("Box Pushing")]
+    public LayerMask boxLayer = -1;
+    public float pushForce = 2f;
+    
     private Rigidbody2D rb;
     private Vector2 moveInput;
     private Transform currentInteractable;
@@ -91,6 +95,41 @@ public class Player : MonoBehaviour
         rb.linearVelocity = moveInput * moveSpeed;
     }
     
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        // Check if we're colliding with a box
+        SokobanBox box = collision.gameObject.GetComponent<SokobanBox>();
+        if (box != null && moveInput.magnitude > 0.1f)
+        {
+            // Calculate push direction based on collision
+            Vector2 pushDirection = GetPushDirection(collision);
+            
+            // Try to push the box
+            box.TryPush(pushDirection, this);
+        }
+    }
+    
+    private Vector2 GetPushDirection(Collision2D collision)
+    {
+        // Get direction from player to box
+        Vector2 dirToBox = (collision.transform.position - transform.position).normalized;
+        
+        // Snap to cardinal directions (Sokoban-style)
+        Vector2 cardinalDirection;
+        if (Mathf.Abs(dirToBox.x) > Mathf.Abs(dirToBox.y))
+        {
+            // Horizontal push
+            cardinalDirection = new Vector2(dirToBox.x > 0 ? 1 : -1, 0);
+        }
+        else
+        {
+            // Vertical push
+            cardinalDirection = new Vector2(0, dirToBox.y > 0 ? 1 : -1);
+        }
+        
+        return cardinalDirection;
+    }
+    
     private void CheckForInteractables()
     {
         Collider2D nearestInteractable = Physics2D.OverlapCircle(transform.position, interactionRange, interactableLayer);
@@ -122,10 +161,34 @@ public class Player : MonoBehaviour
         }
     }
     
+    // PUBLIC METHODS for other scripts
+    public bool IsMoving()
+    {
+        return moveInput.magnitude > 0.1f && rb.linearVelocity.magnitude > 0.1f && isActive;
+    }
+    
+    public Vector2 GetMovementDirection()
+    {
+        return moveInput;
+    }
+    
+    public Vector2 GetVelocity()
+    {
+        return rb.linearVelocity;
+    }
+    
     void OnDrawGizmosSelected()
     {
         // Visualize interaction range in Scene view
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, interactionRange);
+        
+        // Show movement direction
+        if (Application.isPlaying && IsMoving())
+        {
+            Gizmos.color = Color.green;
+            Vector3 moveDir = new Vector3(moveInput.x, moveInput.y, 0);
+            Gizmos.DrawLine(transform.position, transform.position + moveDir * 1.5f);
+        }
     }
 }
