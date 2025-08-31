@@ -35,23 +35,4 @@ public class VolumeSetting : MonoBehaviour
         auMixer.SetFloat("SFX", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat("SFXVolume", volume);
     }
-
-    public void SaveSetting()
-    {
-        savedMusicVolume = musicSlider.value;
-        savedSFXVolume = sfxSlider.value;
-
-        PlayerPrefs.SetFloat("MusicVolume", savedMusicVolume);
-        PlayerPrefs.SetFloat("SFXVolume", savedSFXVolume);
-        PlayerPrefs.Save();
-    }
-
-    public void CancelSetting()
-    {
-        musicSlider.value = savedMusicVolume;
-        sfxSlider.value = savedSFXVolume;
-
-        SetMusicVolume(savedMusicVolume);
-        SetSFXVolume(savedSFXVolume);
-    }
 }
