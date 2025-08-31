@@ -482,8 +482,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
   sfxSource: {fileID: 0}
   footstepSource: {fileID: 0}
+  sfxMixerGroup: {fileID: 5394995851214217682, guid: a61bd313e08bbd140b0835a5f04a494f, type: 2}
   footstepClip: {fileID: 8300000, guid: 1a12ccb8eba6e354585f6c346ba261fd, type: 3}
-  footstepVolumeMin: 0.8
+  footstepVolumeMin: 0.6
   footstepVolumeMax: 1
   footstepPitchMin: 0.9
   footstepPitchMax: 1.1
@@ -1704,7 +1705,8 @@ Transform:
   m_LocalPosition: {x: -0.22069, y: -0.89329, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 959558360}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &287561199
@@ -4199,12 +4201,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 959558356}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.18, y: -0.04, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8.959311, y: 0.85328996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 264347398}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &959558361
 MonoBehaviour:
@@ -7933,7 +7935,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: ac0e3320f48534643a73d4c272fa2ffc, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.34
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -8046,7 +8048,6 @@ SceneRoots:
   - {fileID: 1008351881}
   - {fileID: 1039241157}
   - {fileID: 1965955490}
-  - {fileID: 959558360}
   - {fileID: 264347398}
   - {fileID: 2062140602}
   - {fileID: 503809889}
