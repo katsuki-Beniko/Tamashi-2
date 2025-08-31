@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SoundManager : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class SoundManager : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioSource footstepSource; // Dedicated source for footsteps
+    
+    [Header("Audio Mixer")]
+    [SerializeField] private AudioMixerGroup sfxMixerGroup; // Connect to SFX mixer group
     
     [Header("Footstep Audio")]
     [SerializeField] private AudioClip footstepClip;
@@ -28,12 +32,39 @@ public class SoundManager : MonoBehaviour
                 footstepSource = gameObject.AddComponent<AudioSource>();
                 footstepSource.playOnAwake = false;
                 footstepSource.loop = true; // Set to loop for continuous footsteps
-                footstepSource.volume = 0.9f;
+                footstepSource.volume = 1.0f; // Set to max since mixer will control final volume
             }
+            
+            // Connect footstep source to mixer
+            SetupAudioMixerConnections();
         }
         else
         {
             Destroy(gameObject);
+        }
+    }
+    
+    private void SetupAudioMixerConnections()
+    {
+        // If no mixer group is assigned, try to find it automatically
+        if (sfxMixerGroup == null)
+        {
+            // Try to get the mixer group from the existing sfxSource
+            if (sfxSource != null && sfxSource.outputAudioMixerGroup != null)
+            {
+                sfxMixerGroup = sfxSource.outputAudioMixerGroup;
+            }
+        }
+        
+        // Connect footstep source to the SFX mixer group
+        if (footstepSource != null && sfxMixerGroup != null)
+        {
+            footstepSource.outputAudioMixerGroup = sfxMixerGroup;
+            Debug.Log("Footstep audio connected to SFX mixer group");
+        }
+        else
+        {
+            Debug.LogWarning("Could not connect footstep audio to mixer group!");
         }
     }
 
@@ -47,7 +78,7 @@ public class SoundManager : MonoBehaviour
             footstepSource.clip = footstepClip;
             footstepSource.Play();
             
-            Debug.Log("Started footstep audio");
+            Debug.Log($"Started footstep audio at volume: {footstepSource.volume}");
         }
     }
     
@@ -69,6 +100,20 @@ public class SoundManager : MonoBehaviour
     public bool IsPlayingFootsteps()
     {
         return footstepSource != null && footstepSource.isPlaying;
+    }
+    
+    // Method to manually set footstep volume (affects raw AudioSource volume)
+    public void SetFootstepVolume(float volume)
+    {
+        footstepVolumeMin = Mathf.Clamp01(volume - 0.1f);
+        footstepVolumeMax = Mathf.Clamp01(volume + 0.1f);
+        
+        if (footstepSource != null && footstepSource.isPlaying)
+        {
+            footstepSource.volume = volume;
+        }
+        
+        Debug.Log($"Footstep volume set to: {volume}");
     }
     
     // Additional method for playing other SFX
