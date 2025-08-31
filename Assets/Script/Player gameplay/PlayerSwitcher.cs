@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Cinemachine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
 public class PlayerSwitcher : MonoBehaviour
@@ -17,8 +18,31 @@ public class PlayerSwitcher : MonoBehaviour
     public Color threatenedPlayerColor = Color.orange;
     
     [Header("Switching Rules")]
-    public float switchCooldownAfterHit = 3f; // Cooldown when Player 2 gets hit
-    public bool disableSwitchWhenThreatened = true; // Can't switch when enemy sees you
+    public float switchCooldownAfterHit = 3f;
+    public bool disableSwitchWhenThreatened = true;
+    
+    [Header("Scene-Specific Camera Settings")]
+    public SceneCameraConfig[] sceneCameraConfigs;
+    
+    [System.Serializable]
+    public class SceneCameraConfig
+    {
+        [Header("Scene Info")]
+        [SceneDropdown] // Add the dropdown attribute here
+        public string sceneName;
+        public bool useFixedPositions = false;
+        
+        [Header("Fixed Camera Positions (if enabled)")]
+        public CameraPosition[] playerCameraPositions;
+        
+        [System.Serializable]
+        public class CameraPosition
+        {
+            public Vector3 position;
+            public float lensValue = 6f;
+            public float transitionSpeed = 2f;
+        }
+    }
     
     private int currentPlayerIndex = 0;
     private Player currentActivePlayer;
@@ -31,6 +55,14 @@ public class PlayerSwitcher : MonoBehaviour
     // Threat detection
     private bool isAnyPlayerThreatened = false;
     
+    // Camera system
+    private CinemachineFollow cinemachineFollow;
+    private SceneCameraConfig currentSceneConfig;
+    private bool isTransitioningCamera = false;
+    private Vector3 targetCameraPosition;
+    private float targetLensValue;
+    private float cameraTransitionSpeed = 2f;
+    
     void Start()
     {
         if (players.Length == 0)
@@ -42,7 +74,10 @@ public class PlayerSwitcher : MonoBehaviour
         // Find all enemies in the scene
         FindAllEnemies();
         
-        // Initialize the first player as active (Player is always the main)
+        // Initialize camera system
+        InitializeCameraSystem();
+        
+        // Initialize the first player as active
         SwitchToPlayer(0);
     }
     
@@ -51,6 +86,52 @@ public class PlayerSwitcher : MonoBehaviour
         UpdateCooldown();
         UpdateThreatStatus();
         HandleSwitchInput();
+        HandleCameraTransition();
+    }
+    
+    private void InitializeCameraSystem()
+    {
+        if (cinemachineCamera != null)
+        {
+            cinemachineFollow = cinemachineCamera.GetComponent<CinemachineFollow>();
+        }
+        
+        // Find configuration for current scene
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        currentSceneConfig = GetSceneConfig(currentSceneName);
+        
+        if (currentSceneConfig != null && currentSceneConfig.useFixedPositions)
+        {
+            // Disable follow component for fixed camera mode
+            if (cinemachineFollow != null)
+            {
+                cinemachineFollow.enabled = false;
+            }
+            
+            Debug.Log($"Using fixed camera positions for scene: {currentSceneName}");
+        }
+        else
+        {
+            // Enable follow component for normal following mode
+            if (cinemachineFollow != null)
+            {
+                cinemachineFollow.enabled = true;
+            }
+            
+            Debug.Log($"Using follow camera mode for scene: {currentSceneName}");
+        }
+    }
+    
+    private SceneCameraConfig GetSceneConfig(string sceneName)
+    {
+        foreach (var config in sceneCameraConfigs)
+        {
+            if (config.sceneName == sceneName)
+            {
+                return config;
+            }
+        }
+        return null;
     }
     
     private void FindAllEnemies()
@@ -78,7 +159,6 @@ public class PlayerSwitcher : MonoBehaviour
     {
         isAnyPlayerThreatened = false;
         
-        // Check if any enemy can see any player
         foreach (EnemyChaseAI enemy in allEnemies)
         {
             if (enemy != null && enemy.CanSeeAnyPlayer())
@@ -88,7 +168,6 @@ public class PlayerSwitcher : MonoBehaviour
             }
         }
         
-        // Update visual feedback based on threat status
         UpdateAllPlayerVisuals();
     }
     
@@ -100,9 +179,37 @@ public class PlayerSwitcher : MonoBehaviour
         }
     }
     
+    private void HandleCameraTransition()
+    {
+        if (isTransitioningCamera && cinemachineCamera != null)
+        {
+            // Smoothly move camera to target position
+            Vector3 currentPos = cinemachineCamera.transform.position;
+            Vector3 newPos = Vector3.Lerp(currentPos, targetCameraPosition, cameraTransitionSpeed * Time.deltaTime);
+            cinemachineCamera.transform.position = newPos;
+            
+            // Smoothly change lens value
+            var lens = cinemachineCamera.Lens;
+            lens.OrthographicSize = Mathf.Lerp(lens.OrthographicSize, targetLensValue, cameraTransitionSpeed * Time.deltaTime);
+            cinemachineCamera.Lens = lens;
+            
+            // Check if transition is complete
+            if (Vector3.Distance(newPos, targetCameraPosition) < 0.1f && 
+                Mathf.Abs(lens.OrthographicSize - targetLensValue) < 0.1f)
+            {
+                // Snap to final position and stop transition
+                cinemachineCamera.transform.position = targetCameraPosition;
+                lens.OrthographicSize = targetLensValue;
+                cinemachineCamera.Lens = lens;
+                isTransitioningCamera = false;
+                
+                Debug.Log($"Camera transition complete. Position: {targetCameraPosition}, Lens: {targetLensValue}");
+            }
+        }
+    }
+    
     private void TryToSwitchPlayer()
     {
-        // Check if switching is allowed
         if (!CanSwitchPlayers())
         {
             string reason = GetSwitchBlockReason();
@@ -115,13 +222,8 @@ public class PlayerSwitcher : MonoBehaviour
     
     private bool CanSwitchPlayers()
     {
-        // Can't switch if only one player
         if (players.Length <= 1) return false;
-        
-        // Can't switch during cooldown
         if (isOnCooldown) return false;
-        
-        // Can't switch when threatened (if enabled)
         if (disableSwitchWhenThreatened && isAnyPlayerThreatened) return false;
         
         return true;
@@ -139,7 +241,6 @@ public class PlayerSwitcher : MonoBehaviour
     {
         if (players.Length <= 1) return;
         
-        // Calculate next player index (loop back to 0 if at the end)
         int nextPlayerIndex = (currentPlayerIndex + 1) % players.Length;
         SwitchToPlayer(nextPlayerIndex);
     }
@@ -159,8 +260,8 @@ public class PlayerSwitcher : MonoBehaviour
         currentActivePlayer = players[currentPlayerIndex];
         currentActivePlayer.SetActive(true);
         
-        // Update camera to follow new player
-        UpdateCameraTarget(currentActivePlayer.transform);
+        // Update camera
+        UpdateCameraForPlayer(playerIndex);
         
         // Update visuals
         UpdateAllPlayerVisuals();
@@ -168,11 +269,34 @@ public class PlayerSwitcher : MonoBehaviour
         Debug.Log($"Switched to {currentActivePlayer.name}");
     }
     
-    private void UpdateCameraTarget(Transform newTarget)
+    private void UpdateCameraForPlayer(int playerIndex)
     {
-        if (cinemachineCamera != null)
+        if (cinemachineCamera == null) return;
+        
+        if (currentSceneConfig != null && currentSceneConfig.useFixedPositions)
         {
-            cinemachineCamera.Target.TrackingTarget = newTarget;
+            // Use fixed camera positions
+            if (playerIndex < currentSceneConfig.playerCameraPositions.Length)
+            {
+                var cameraPos = currentSceneConfig.playerCameraPositions[playerIndex];
+                
+                // Start camera transition to fixed position
+                targetCameraPosition = cameraPos.position;
+                targetLensValue = cameraPos.lensValue;
+                cameraTransitionSpeed = cameraPos.transitionSpeed;
+                isTransitioningCamera = true;
+                
+                Debug.Log($"Transitioning camera to fixed position: {targetCameraPosition}, Lens: {targetLensValue}");
+            }
+        }
+        else
+        {
+            // Use follow mode - update camera target
+            if (cinemachineFollow != null && currentActivePlayer != null)
+            {
+                cinemachineCamera.Target.TrackingTarget = currentActivePlayer.transform;
+                Debug.Log($"Camera now following {currentActivePlayer.name}");
+            }
         }
     }
     
@@ -194,39 +318,31 @@ public class PlayerSwitcher : MonoBehaviour
         {
             if (isActive)
             {
-                // Active player - red if threatened, normal active color if safe
                 spriteRenderer.color = isAnyPlayerThreatened ? threatenedPlayerColor : activePlayerColor;
             }
             else
             {
-                // Inactive player
                 spriteRenderer.color = inactivePlayerColor;
             }
         }
     }
     
-    // Called when Player 2 gets hit by enemy
     public void OnPlayer2Hit()
     {
         Debug.Log("Player 2 was hit! Forcing switch to Player 1 and starting cooldown");
         
-        // Force switch to Player (index 0)
         SwitchToPlayer(0);
         
-        // Start cooldown
         isOnCooldown = true;
         switchCooldownTimer = switchCooldownAfterHit;
         
         Debug.Log($"Cannot switch to Player 2 for {switchCooldownAfterHit} seconds");
     }
     
-    // Called when main Player gets hit by enemy
     public void OnMainPlayerHit()
     {
         Debug.Log("Main Player was hit! Game Over!");
-        // Handle game over logic here
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     
     public Player GetActivePlayer()
@@ -241,7 +357,6 @@ public class PlayerSwitcher : MonoBehaviour
     
     public bool IsMainPlayer(Player player)
     {
-        // Player at index 0 is always the main player
         return players.Length > 0 && players[0] == player;
     }
     
@@ -265,10 +380,21 @@ public class PlayerSwitcher : MonoBehaviour
     {
         if (Application.isPlaying)
         {
-            GUILayout.BeginArea(new Rect(10, 10, 300, 150));
+            GUILayout.BeginArea(new Rect(10, 10, 350, 200));
             GUILayout.Label($"Active Player: {(currentActivePlayer ? currentActivePlayer.name : "None")}");
             GUILayout.Label($"Threatened: {(isAnyPlayerThreatened ? "YES" : "No")}");
             GUILayout.Label($"Can Switch: {(CanSwitchPlayers() ? "YES" : "No")}");
+            
+            if (currentSceneConfig != null)
+            {
+                GUILayout.Label($"Scene: {SceneManager.GetActiveScene().name}");
+                GUILayout.Label($"Camera Mode: {(currentSceneConfig.useFixedPositions ? "Fixed Positions" : "Follow")}");
+            }
+            
+            if (isTransitioningCamera)
+            {
+                GUILayout.Label($"Camera Transitioning: {targetCameraPosition}");
+            }
             
             if (isOnCooldown)
             {
