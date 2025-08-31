@@ -35,6 +35,7 @@ public class MultiComponentPuzzleController : MonoBehaviour
     [Header("Camera Shake on Completion")]
     public bool enableCameraShake = true;
     public CameraController cameraController;
+    public float cameraShakeDuration = 2.0f; // FIXED: Added missing variable
     public float shakeAmplitude = 0.3f;
     public int shakeSoftLevel = 2;
     public bool shakeDecrease = true;
@@ -280,15 +281,17 @@ public class MultiComponentPuzzleController : MonoBehaviour
         
         Debug.Log("🎉 Multi-Component Puzzle COMPLETED! All requirements satisfied.");
         
-        // Execute all completion actions
+        // Execute completion actions in order
         ActivateConnectedObjects();
-        TriggerCameraShake();
         
         // NEW: Destroy objects when puzzle is completed
         if (objectsToDestroy.Length > 0)
         {
             DestroyPuzzleObjects();
         }
+        
+        // TRIGGER CAMERA SHAKE AFTER DOORS ARE OPENED
+        TriggerCameraShake();
     }
     
     private void ActivateConnectedObjects()
@@ -321,6 +324,22 @@ public class MultiComponentPuzzleController : MonoBehaviour
                 door.SetActive(true);
                 Debug.Log($"Opened door: {door.name}");
             }
+        }
+        
+        Debug.Log($"Door opening complete - {doorsToOpen.Length} doors opened");
+    }
+    
+    private void TriggerCameraShake()
+    {
+        if (enableCameraShake && cameraController != null)
+        {
+            // FIXED: Use cameraShakeDuration instead of shakeDuration
+            cameraController.Shake(cameraShakeDuration, shakeAmplitude, shakeSoftLevel, shakeDecrease);
+            Debug.Log($"🔥 PUZZLE COMPLETE CAMERA SHAKE! Duration: {cameraShakeDuration}s, Amplitude: {shakeAmplitude}");
+        }
+        else if (enableCameraShake)
+        {
+            Debug.LogWarning("Camera shake enabled but no CameraController found!");
         }
     }
     
@@ -454,15 +473,6 @@ public class MultiComponentPuzzleController : MonoBehaviour
         }
         
         Debug.Log($"Destroyed {objectsToDestroy.Length} objects!");
-    }
-    
-    private void TriggerCameraShake()
-    {
-        if (enableCameraShake && cameraController != null)
-        {
-            cameraController.Shake(shakeDuration, shakeAmplitude, shakeSoftLevel, shakeDecrease);
-            Debug.Log($"Camera shake triggered! Duration: {shakeDuration}s, Amplitude: {shakeAmplitude}");
-        }
     }
     
     // Public Methods
