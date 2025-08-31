@@ -8,15 +8,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main gameplay/Main Menu.unity
     guid: e09a73d786fbc8344b55085b889a8394
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/puzzle Testing.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/enemy testing.unity
     guid: 6f18cdc218bed7147a0fa81e8437b8f8
   - enabled: 1
     path: Assets/Scenes/Main gameplay/level-1.unity
     guid: 5734a32232e72da41ab159f15cc58a4f
+  - enabled: 1
+    path: Assets/Scenes/Main gameplay/level-2.unity
+    guid: d6e62a82778775048839b6767c1e1681
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
