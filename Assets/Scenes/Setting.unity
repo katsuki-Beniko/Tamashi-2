@@ -1910,6 +1910,7 @@ GameObject:
   - component: {fileID: 1594723999}
   - component: {fileID: 1594723998}
   - component: {fileID: 1594724001}
+  - component: {fileID: 1594724002}
   m_Layer: 5
   m_Name: Save Btn
   m_TagString: Untagged
@@ -1980,7 +1981,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1594723999}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1594724002}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: SaveSettings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1594723999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2034,6 +2047,22 @@ MonoBehaviour:
   auMixer: {fileID: 24100000, guid: a61bd313e08bbd140b0835a5f04a494f, type: 2}
   musicSlider: {fileID: 1160827074}
   sfxSlider: {fileID: 591431544}
+--- !u!114 &1594724002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594723996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1827c3c5076701441ac2d06630b49396, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMenu
+  startSceneIndex: 0
+  audioMixer: {fileID: 24100000, guid: a61bd313e08bbd140b0835a5f04a494f, type: 2}
+  musicSlider: {fileID: 1160827074}
+  sfxSlider: {fileID: 591431544}
 --- !u!1 &1646069706
 GameObject:
   m_ObjectHideFlags: 0
@@ -2047,6 +2076,7 @@ GameObject:
   - component: {fileID: 1646069709}
   - component: {fileID: 1646069708}
   - component: {fileID: 1646069711}
+  - component: {fileID: 1646069712}
   m_Layer: 5
   m_Name: Cancel Btn
   m_TagString: Untagged
@@ -2117,7 +2147,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1646069709}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1646069712}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: CancelSettings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1646069709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2169,6 +2211,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VolumeSetting
   auMixer: {fileID: 24100000, guid: a61bd313e08bbd140b0835a5f04a494f, type: 2}
+  musicSlider: {fileID: 1160827074}
+  sfxSlider: {fileID: 591431544}
+--- !u!114 &1646069712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1646069706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1827c3c5076701441ac2d06630b49396, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMenu
+  startSceneIndex: 0
+  audioMixer: {fileID: 24100000, guid: a61bd313e08bbd140b0835a5f04a494f, type: 2}
   musicSlider: {fileID: 1160827074}
   sfxSlider: {fileID: 591431544}
 --- !u!1 &1792534980

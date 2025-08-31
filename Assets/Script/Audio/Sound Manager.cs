@@ -10,6 +10,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource footstepSource; // Dedicated source for footsteps
     
     [Header("Audio Mixer")]
+    [SerializeField] private AudioMixer audioMixer; // Full audio mixer
     [SerializeField] private AudioMixerGroup sfxMixerGroup; // Connect to SFX mixer group
     
     [Header("Footstep Audio")]
@@ -37,6 +38,7 @@ public class SoundManager : MonoBehaviour
             
             // Connect footstep source to mixer
             SetupAudioMixerConnections();
+            ApplySavedVolumeSettings();
         }
         else
         {
@@ -65,6 +67,22 @@ public class SoundManager : MonoBehaviour
         else
         {
             Debug.LogWarning("Could not connect footstep audio to mixer group!");
+        }
+    }
+
+    // Apply Saved Volume Settings From PlayerPrefs
+    public void ApplySavedVolumeSettings()
+    {
+        if (PlayerPrefs.HasKey("MusicVolume"))
+        {
+            float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
+            audioMixer.SetFloat("Music", Mathf.Log10(musicVolume) * 20);
+        }
+
+        if (PlayerPrefs.HasKey("SFXVolume"))
+        {
+            float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+            audioMixer.SetFloat("SFX", Mathf.Log10(sfxVolume) * 20);
         }
     }
 
