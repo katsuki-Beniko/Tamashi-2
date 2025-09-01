@@ -6,7 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class FirstSceneController : MonoBehaviour
 {
-    public string sceneName = "level-1";
+    [Header("Next Scene")]
+    [Tooltip("Type the scene name exactly as in Build Settings (e.g., level-1).")]
+    public string nextScene;
 
 
     [Header("Required")]
@@ -156,6 +158,13 @@ public class FirstSceneController : MonoBehaviour
         //// Or 2) Load next scene:
         //// SceneManager.LoadScene("GameScene");
         ///
-        SceneManager.LoadScene("level-1");
+
+        if (string.IsNullOrWhiteSpace(nextScene))
+        {
+            Debug.LogError("FirstSceneController: nextScene is empty. Set it in the Inspector.");
+            return;
+        }
+
+        SceneManager.LoadScene(nextScene);
     }
 }
