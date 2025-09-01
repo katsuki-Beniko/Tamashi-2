@@ -50,9 +50,6 @@ public class Playersokoban : MonoBehaviour
             if (hit.collider.GetComponent<Box>() != null)
                 return hit.collider.GetComponent<Box>().CanMoveToDir(dir);
             
-            // Also check for SokobanBox component
-            if (hit.collider.GetComponent<SokobanBox>() != null)
-                return hit.collider.GetComponent<SokobanBox>().TryPush(dir, null);
         }
 
         return false;
