@@ -1,24 +1,22 @@
 using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 
-public class PressurePlate : MonoBehaviour
+public class InteractiveButton : MonoBehaviour, IInteractable
 {
-    [Header("Plate Settings")]
-    public int plateID = 1; // Unique ID for this plate (used in sequences)
-    public bool isPressed = false;
-    public bool stayPressed = false; // If true, stays pressed once activated
+    [Header("Button Settings")]
+    public bool stayActivated = true; // Button stays on after activation
+    public bool canToggle = false; // Can be turned off after activation
     
     [Header("Visual Feedback")]
-    public Sprite plateUpSprite;
-    public Sprite plateDownSprite;
-    public Color plateUpColor = Color.gray;
-    public Color plateDownColor = Color.green;
-    public float pressDepth = 0.2f; // How far down the plate moves when pressed
+    public GameObject activatedVisual; // GameObject to show when activated
+    public Color normalColor = Color.white;
+    public Color activatedColor = Color.green;
     
     [Header("Individual Object Destruction")]
-    public GameObject[] objectsToDestroy; // Objects this plate will destroy when activated
+    public GameObject[] objectsToDestroy; // Objects this button will destroy when activated
     public bool destroyOnActivation = true; // Destroy when pressed
-    public bool destroyOnDeactivation = false; // Destroy when released
+    public bool destroyOnDeactivation = false; // Destroy when deactivated
     public float destructionDelay = 0.0f; // Delay before destruction
     
     [Header("Destruction Effects")]
@@ -29,84 +27,58 @@ public class PressurePlate : MonoBehaviour
     public float shakeDuration = 0.3f;
     
     [Header("Audio")]
-    public AudioClip pressSound;
-    public AudioClip releaseSound;
+    public AudioClip activationSound;
+    public AudioClip deactivationSound;
     public AudioClip destructionSound;
     
-    [Header("Detection")]
-    public LayerMask triggerLayers = -1; // What can trigger this plate (players, objects, etc.)
+    // Events for puzzle system
+    public System.Action<InteractiveButton> OnButtonActivated;
+    public System.Action<InteractiveButton> OnButtonDeactivated;
     
+    // Unity Events for additional functionality
+    public UnityEvent OnActivated;
+    public UnityEvent OnDeactivated;
+    
+    private bool isActivated = false;
+    private bool hasDestroyedObjects = false;
     private SpriteRenderer spriteRenderer;
     private AudioSource audioSource;
-    private Vector3 originalPosition;
-    private Vector3 pressedPosition;
-    private PressurePlateController controller;
-    private int currentTriggersOnPlate = 0;
-    private bool hasDestroyedObjects = false;
     
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
-        controller = GetComponentInParent<PressurePlateController>();
         
-        // Store original position for animation
-        originalPosition = transform.position;
-        pressedPosition = originalPosition + Vector3.down * pressDepth;
-        
-        UpdatePlateVisual();
+        UpdateVisuals();
     }
     
-    void OnTriggerEnter2D(Collider2D other)
+    public void Interact(Player player)
     {
-        // Check if the object is on a valid trigger layer
-        if (IsValidTrigger(other.gameObject))
+        if (!isActivated)
         {
-            currentTriggersOnPlate++;
-            
-            // Press the plate if not already pressed
-            if (!isPressed)
-            {
-                ActivatePlate();
-            }
+            ActivateButton();
+        }
+        else if (canToggle)
+        {
+            DeactivateButton();
+        }
+        else
+        {
+            Debug.Log($"Button {name} is already activated and cannot be toggled");
         }
     }
     
-    void OnTriggerExit2D(Collider2D other)
+    public void ActivateButton()
     {
-        // Check if the object is on a valid trigger layer
-        if (IsValidTrigger(other.gameObject))
-        {
-            currentTriggersOnPlate--;
-            
-            // Release the plate if no more triggers and not set to stay pressed
-            if (currentTriggersOnPlate <= 0 && !stayPressed && isPressed)
-            {
-                DeactivatePlate();
-            }
-        }
-    }
-    
-    private bool IsValidTrigger(GameObject obj)
-    {
-        return ((1 << obj.layer) & triggerLayers) != 0;
-    }
-    
-    public void ActivatePlate()
-    {
-        if (isPressed) return;
+        if (isActivated && stayActivated) return;
         
-        isPressed = true;
-        currentTriggersOnPlate = Mathf.Max(1, currentTriggersOnPlate);
+        isActivated = true;
+        UpdateVisuals();
+        PlaySound(activationSound);
         
-        UpdatePlateVisual();
-        PlaySound(pressSound);
-        
-        // Notify the controller
-        if (controller != null)
-        {
-            controller.OnPlateActivated(this);
-        }
+        // Notify puzzle system
+        OnButtonActivated?.Invoke(this);
+        OnActivated?.Invoke();
         
         // NEW: Destroy objects when activated
         if (destroyOnActivation && objectsToDestroy.Length > 0 && !hasDestroyedObjects)
@@ -114,24 +86,26 @@ public class PressurePlate : MonoBehaviour
             DestroyTargetObjects();
         }
         
-        Debug.Log($"Pressure plate {plateID} activated!");
+        Debug.Log($"Interactive button {name} activated!");
+        
+        if (!stayActivated)
+        {
+            // Auto-deactivate after a short delay
+            Invoke(nameof(DeactivateButton), 0.5f);
+        }
     }
     
-    public void DeactivatePlate()
+    public void DeactivateButton()
     {
-        if (!isPressed) return;
+        if (!isActivated) return;
         
-        isPressed = false;
-        currentTriggersOnPlate = 0;
+        isActivated = false;
+        UpdateVisuals();
+        PlaySound(deactivationSound);
         
-        UpdatePlateVisual();
-        PlaySound(releaseSound);
-        
-        // Notify the controller
-        if (controller != null)
-        {
-            controller.OnPlateDeactivated(this);
-        }
+        // Notify puzzle system
+        OnButtonDeactivated?.Invoke(this);
+        OnDeactivated?.Invoke();
         
         // NEW: Destroy objects when deactivated (optional)
         if (destroyOnDeactivation && objectsToDestroy.Length > 0 && !hasDestroyedObjects)
@@ -139,7 +113,7 @@ public class PressurePlate : MonoBehaviour
             DestroyTargetObjects();
         }
         
-        Debug.Log($"Pressure plate {plateID} deactivated!");
+        Debug.Log($"Interactive button {name} deactivated!");
     }
     
     // NEW: Individual object destruction system
@@ -149,7 +123,7 @@ public class PressurePlate : MonoBehaviour
         
         hasDestroyedObjects = true;
         
-        Debug.Log($"Pressure plate {plateID} destroying {objectsToDestroy.Length} target objects...");
+        Debug.Log($"Interactive button {name} destroying {objectsToDestroy.Length} target objects...");
         
         if (destructionDelay > 0)
         {
@@ -265,58 +239,27 @@ public class PressurePlate : MonoBehaviour
         {
             if (obj != null)
             {
-                Debug.Log($"🗑️ Pressure plate {plateID} destroyed: {obj.name}");
+                Debug.Log($"🗑️ Interactive button {name} destroyed: {obj.name}");
                 Destroy(obj);
             }
         }
         
-        Debug.Log($"Pressure plate {plateID} destruction complete!");
+        Debug.Log($"Interactive button {name} destruction complete!");
     }
     
-    public void ForceActivate()
+    private void UpdateVisuals()
     {
-        ActivatePlate();
-    }
-    
-    public void ForceDeactivate()
-    {
-        if (!stayPressed)
-        {
-            DeactivatePlate();
-        }
-    }
-    
-    // Public methods for external control
-    public void ManualDestroyObjects()
-    {
-        DestroyTargetObjects();
-    }
-    
-    public void ResetDestructionState()
-    {
-        hasDestroyedObjects = false;
-    }
-    
-    private void UpdatePlateVisual()
-    {
+        // Update sprite color
         if (spriteRenderer != null)
         {
-            // Update sprite
-            if (isPressed && plateDownSprite != null)
-            {
-                spriteRenderer.sprite = plateDownSprite;
-            }
-            else if (!isPressed && plateUpSprite != null)
-            {
-                spriteRenderer.sprite = plateUpSprite;
-            }
-            
-            // Update color
-            spriteRenderer.color = isPressed ? plateDownColor : plateUpColor;
+            spriteRenderer.color = isActivated ? activatedColor : normalColor;
         }
         
-        // Animate position
-        transform.position = isPressed ? pressedPosition : originalPosition;
+        // Update activated visual
+        if (activatedVisual != null)
+        {
+            activatedVisual.SetActive(isActivated);
+        }
     }
     
     private void PlaySound(AudioClip clip)
@@ -327,9 +270,30 @@ public class PressurePlate : MonoBehaviour
         }
     }
     
+    // Public methods
+    public bool IsActivated() => isActivated;
+    
+    public void SetActivated(bool activated)
+    {
+        if (activated)
+            ActivateButton();
+        else
+            DeactivateButton();
+    }
+    
+    public void ManualDestroyObjects()
+    {
+        DestroyTargetObjects();
+    }
+    
+    public void ResetDestructionState()
+    {
+        hasDestroyedObjects = false;
+    }
+    
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = isPressed ? Color.green : Color.red;
+        Gizmos.color = isActivated ? Color.green : Color.yellow;
         Gizmos.DrawWireCube(transform.position, Vector3.one * 0.8f);
         
         // Draw lines to destruction targets
@@ -344,7 +308,8 @@ public class PressurePlate : MonoBehaviour
         }
         
         #if UNITY_EDITOR
-        UnityEditor.Handles.Label(transform.position + Vector3.up * 0.5f, $"Plate {plateID}\nTargets: {objectsToDestroy.Length}");
+        string status = isActivated ? "ACTIVATED" : "INACTIVE";
+        UnityEditor.Handles.Label(transform.position + Vector3.up * 1f, $"Button: {status}\nTargets: {objectsToDestroy.Length}");
         #endif
     }
 }

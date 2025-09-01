@@ -29,6 +29,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main gameplay/level-4.unity
     guid: bd3b6fe78f3f18f4b82133b96b1a704c
+  - enabled: 1
+    path: Assets/Scenes/Main gameplay/Setting.unity
+    guid: 762e23f754b1ab840ad15ca0c8493ded
+  - enabled: 1
+    path: Assets/Scenes/Main gameplay/Final story (jungle).unity
+    guid: 080b85d8cf45f2748ac7aab3fad332a2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
