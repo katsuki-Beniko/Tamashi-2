@@ -513,6 +513,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3549803104007266998, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3549803104007266998, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
       propertyPath: m_SortingOrder
       value: 4
       objectReference: {fileID: 0}
@@ -1859,7 +1863,7 @@ Transform:
   m_GameObject: {fileID: 582163830}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.361, y: 0.063, z: 0}
+  m_LocalPosition: {x: -0.347, y: 0.045, z: 0}
   m_LocalScale: {x: 0.048361536, y: 0.048361536, z: 0.048361536}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -2151,8 +2155,8 @@ Transform:
   m_GameObject: {fileID: 1088939960}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.17, y: -3.58, z: 0}
-  m_LocalScale: {x: 13, y: 13, z: 13}
+  m_LocalPosition: {x: -10.88, y: -3.68, z: 0}
+  m_LocalScale: {x: 13.2964, y: 13, z: 13}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 582163831}
@@ -6638,8 +6642,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -10.509987, y: -101.71998}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 1, y: -27.2}
+  m_SizeDelta: {x: 66.481, y: 15.381}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1533040860
 MonoBehaviour:
@@ -6661,7 +6665,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ...Is time to go.
+  m_text: ...Its time to go.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1676c25a9f5e00644970774a4a66d488, type: 2}
   m_sharedMaterial: {fileID: -4876172965887158738, guid: 1676c25a9f5e00644970774a4a66d488, type: 2}
@@ -6688,8 +6692,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 5
+  m_fontSizeBase: 5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -6726,7 +6730,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -58.055786, w: 0}
+  m_margin: {x: 0, y: 0, z: -0.1302643, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -6808,10 +6812,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -6828,8 +6832,8 @@ Canvas:
   m_GameObject: {fileID: 1561787211}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 69888386}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -6902,6 +6906,10 @@ PrefabInstance:
       propertyPath: cinemachineCamera
       value: 
       objectReference: {fileID: 82490688}
+    - target: {fileID: 1296324358058552845, guid: fa03db6df1fc4034f8b75c17b66b8bfd, type: 3}
+      propertyPath: players.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1296324358058552845, guid: fa03db6df1fc4034f8b75c17b66b8bfd, type: 3}
       propertyPath: activePlayerColor.b
       value: 1

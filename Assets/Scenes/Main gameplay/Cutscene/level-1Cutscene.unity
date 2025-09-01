@@ -153,8 +153,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -26.6658, y: -118.6}
-  m_SizeDelta: {x: 172.4147, y: 50}
+  m_AnchoredPosition: {x: -92, y: -142}
+  m_SizeDelta: {x: 427.71, y: 155.14}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &29500410
 MonoBehaviour:
@@ -176,7 +176,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ...It lock. I can use my power to unlock the door.
+  m_text: ...It lock. It seems like there are puppet on the ground. I can use my
+    power to unlock the door.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1676c25a9f5e00644970774a4a66d488, type: 2}
   m_sharedMaterial: {fileID: -4876172965887158738, guid: 1676c25a9f5e00644970774a4a66d488, type: 2}
@@ -203,8 +204,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -241,7 +242,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -50.55133, w: 0}
+  m_margin: {x: 0, y: 0, z: -0.20306015, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -318,7 +319,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 20
+  m_SortingOrder: 10
   m_Sprite: {fileID: -1538924207365483094, guid: 2e244677f262bfc41af951a2962a2be3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -330,28 +331,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!224 &157797368
-RectTransform:
+--- !u!4 &157797368
+Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 157797366}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 74.17229}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -85, y: -140, z: 0}
+  m_LocalScale: {x: 787.03705, y: 649.8383, z: 90}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1763696366}
   - {fileID: 1578141347}
-  - {fileID: 358150452}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 358150452}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 282.8, y: 68.5}
-  m_SizeDelta: {x: 246.94, y: 0.7}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &167262109
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,7 +411,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 12.853916
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -709,7 +705,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 29500409}
-  m_Father: {fileID: 157797368}
+  - {fileID: 157797368}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -745,10 +742,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -765,8 +762,8 @@ Canvas:
   m_GameObject: {fileID: 358150451}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 167262111}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -11943,7 +11940,7 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 60
-    OrthographicSize: 12.853916
+    OrthographicSize: 6
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -12025,8 +12022,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3549803104007266998, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3549803104007266998, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
       propertyPath: m_SortingOrder
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5083688258249821128, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
       propertyPath: m_Name
@@ -14728,8 +14729,8 @@ Transform:
   m_GameObject: {fileID: 1578141346}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.269, y: -0.131, z: 0}
-  m_LocalScale: {x: 0.6153846, y: 0.6153846, z: 0.6153846}
+  m_LocalPosition: {x: 0.2869, y: -0.129, z: 0}
+  m_LocalScale: {x: 1, y: 1.4905827, z: 6.7506995}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 157797368}
@@ -14827,7 +14828,7 @@ PlayableDirector:
   - key: {fileID: -6330564256937785070, guid: 47ab6d2ab94b67849838fc2b85c0dbe0, type: 2}
     value: {fileID: 310521829}
   - key: {fileID: -7265487220422460983, guid: 47ab6d2ab94b67849838fc2b85c0dbe0, type: 2}
-    value: {fileID: 157797366}
+    value: {fileID: 358150451}
   - key: {fileID: -5187112849218531203, guid: 47ab6d2ab94b67849838fc2b85c0dbe0, type: 2}
     value: {fileID: 310521829}
   m_ExposedReferences:
@@ -19359,8 +19360,8 @@ Transform:
   m_GameObject: {fileID: 1763696365}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.344, y: 0.08, z: 0}
-  m_LocalScale: {x: 0.048361536, y: 0.048361536, z: 0.048361536}
+  m_LocalPosition: {x: -0.378, y: 0.044, z: 0}
+  m_LocalScale: {x: 0.028026465, y: 0.037951868, z: 0.048361536}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 157797368}
@@ -20504,4 +20505,4 @@ SceneRoots:
   - {fileID: 1568673513}
   - {fileID: 1570704252}
   - {fileID: 1585837396}
-  - {fileID: 157797368}
+  - {fileID: 358150452}
