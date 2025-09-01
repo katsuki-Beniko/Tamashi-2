@@ -350,11 +350,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6f1d97da8f893a4b9b9796c3a80e922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirstSceneController
-  nextScene: level-1
+  nextScene: OpeningCutscene
   slideImage: {fileID: 1890082343}
   slides:
-  - {fileID: -8015575210903053141, guid: 069813012fd35ab408807882e3687a5b, type: 3}
-  - {fileID: -917669537059308928, guid: f34367a775e9a614899647d288fb56be, type: 3}
+  - {fileID: -3587400277678101785, guid: 802604e9f2d9dc4419f7727e0acd0deb, type: 3}
+  - {fileID: 8378289303607482767, guid: 5402e0a2c0bc7724f810558156584252, type: 3}
   autoAdvanceSeconds: 0
   fadeDuration: 0.25
   captionText: {fileID: 0}

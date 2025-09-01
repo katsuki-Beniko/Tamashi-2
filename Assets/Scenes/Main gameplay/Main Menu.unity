@@ -421,7 +421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1827c3c5076701441ac2d06630b49396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
-  startSceneIndex: 1
+  startSceneIndex: 10
   audioMixer: {fileID: 0}
   musicSlider: {fileID: 0}
   sfxSlider: {fileID: 0}
@@ -1214,7 +1214,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 744893753}
   - {fileID: 1324608885}
   - {fileID: 1144184452}
   - {fileID: 899145347}
