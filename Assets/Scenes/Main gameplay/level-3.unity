@@ -10640,6 +10640,18 @@ PrefabInstance:
       propertyPath: 'objectsToActivate.Array.data[0]'
       value: 
       objectReference: {fileID: 415873978}
+    - target: {fileID: 5118897119957765026, guid: aa6713f46ad4ee145bc443e3fe743018, type: 3}
+      propertyPath: m_Size.y
+      value: 0.6948134
+      objectReference: {fileID: 0}
+    - target: {fileID: 5118897119957765026, guid: aa6713f46ad4ee145bc443e3fe743018, type: 3}
+      propertyPath: m_Offset.y
+      value: -0.06692511
+      objectReference: {fileID: 0}
+    - target: {fileID: 5118897119957765026, guid: aa6713f46ad4ee145bc443e3fe743018, type: 3}
+      propertyPath: m_SpriteTilingProperty.pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5180812065558347691, guid: aa6713f46ad4ee145bc443e3fe743018, type: 3}
       propertyPath: m_Sprite
       value: 
