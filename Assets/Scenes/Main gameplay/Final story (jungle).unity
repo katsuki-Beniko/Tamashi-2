@@ -2492,7 +2492,7 @@ MonoBehaviour:
   triggerType: 0
   transitionTriggerTime: 7.8
   transitionDelay: 0
-  targetSceneName: Main Menu
+  targetSceneName: LastScene
   useSceneIndex: 0
   targetSceneIndex: 0
   fadeOut: 1
@@ -2531,6 +2531,8 @@ PlayableDirector:
     value: {fileID: 1867562770}
   - key: {fileID: -7568812256323155533, guid: f91aae68463fe2d47b1cb862b30f3015, type: 2}
     value: {fileID: 1867562770}
+  - key: {fileID: -4068789390487499624, guid: f91aae68463fe2d47b1cb862b30f3015, type: 2}
+    value: {fileID: 1848554101}
   m_ExposedReferences:
     m_References: []
 --- !u!4 &174109979
