@@ -350,6 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6f1d97da8f893a4b9b9796c3a80e922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirstSceneController
+  nextScene: level-1
   slideImage: {fileID: 1890082343}
   slides:
   - {fileID: -8015575210903053141, guid: 069813012fd35ab408807882e3687a5b, type: 3}
