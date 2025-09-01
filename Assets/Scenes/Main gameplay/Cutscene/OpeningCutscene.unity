@@ -550,7 +550,7 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: e79ea8d458caf6f48b258e9b2aa3a2ff, type: 3}
     - target: {fileID: 8477420117442223093, guid: e4ec24e813048cb43b9129e61d409943, type: 3}
       propertyPath: targetSceneName
-      value: level-1
+      value: level-1Cutscene
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
